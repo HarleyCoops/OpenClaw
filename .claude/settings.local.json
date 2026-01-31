@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(wsl bash -c \"cd ~/openclaw && ls -la vendor/a2ui/renderers/lit/\")",
+      "Bash(wsl bash -lc \"source ~/.nvm/nvm.sh && cd ~/openclaw && rm -rf node_modules && pnpm install\")",
+      "Bash(wsl bash:*)",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_type",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot"
+    ]
+  }
+}
