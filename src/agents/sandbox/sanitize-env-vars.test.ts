@@ -5,7 +5,7 @@ describe("sanitizeEnvVars", () => {
   it("keeps normal env vars and blocks obvious credentials", () => {
     const result = sanitizeEnvVars({
       NODE_ENV: "test",
-      OPENAI_API_KEY: "sk-live-xxx",
+      OPENAI_API_KEY: "TEST_OPENAI_KEY_PLACEHOLDER",
       FOO: "bar",
       GITHUB_TOKEN: "gh-token",
     });

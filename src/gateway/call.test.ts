@@ -99,7 +99,7 @@ function setLocalLoopbackGatewayConfig(port = 18789) {
   setGatewayNetworkDefaults(port);
 }
 
-function makeRemotePasswordGatewayConfig(remotePassword: string, localPassword = "from-config") {
+function makeRemotePasswordGatewayConfig(remotePassword: string, localPassword = "__TEST_CONFIG_VALUE__") {
   return {
     gateway: {
       mode: "remote",
@@ -196,11 +196,11 @@ describe("callGateway url resolution", () => {
     await callGateway({
       method: "health",
       url: "wss://override.example/ws",
-      token: "explicit-token",
+      token: "__TEST_TOKEN__",
     });
 
     expect(lastClientOptions?.url).toBe("wss://override.example/ws");
-    expect(lastClientOptions?.token).toBe("explicit-token");
+    expect(lastClientOptions?.token).toBe("__TEST_TOKEN__");
   });
 
   it.each([
@@ -433,12 +433,12 @@ describe("callGateway url override auth requirements", () => {
   });
 
   it("throws when url override is set without explicit credentials", async () => {
-    process.env.OPENCLAW_GATEWAY_TOKEN = "env-token";
-    process.env.OPENCLAW_GATEWAY_PASSWORD = "env-password";
+    process.env.OPENCLAW_GATEWAY_TOKEN = "__TEST_ENV_TOKEN__";
+    process.env.OPENCLAW_GATEWAY_PASSWORD = "__TEST_ENV_PASSWORD__word";
     loadConfig.mockReturnValue({
       gateway: {
         mode: "local",
-        auth: { token: "local-token", password: "local-password" },
+        auth: { token: "__TEST_LOCAL_TOKEN_BASE__", password: "__TEST_LOCAL_PASSWORD__" },
       },
     });
 
@@ -456,16 +456,16 @@ describe("callGateway password resolution", () => {
       authKey: "password",
       envKey: "OPENCLAW_GATEWAY_PASSWORD",
       envValue: "from-env",
-      configValue: "from-config",
-      explicitValue: "explicit-password",
+      configValue: "__TEST_CONFIG_VALUE__",
+      explicitValue: "__TEST_PASSWORD__",
     },
     {
       label: "token",
       authKey: "token",
       envKey: "OPENCLAW_GATEWAY_TOKEN",
-      envValue: "env-token",
-      configValue: "local-token",
-      explicitValue: "explicit-token",
+      envValue: "__TEST_ENV_TOKEN__",
+      configValue: "__TEST_LOCAL_TOKEN_BASE__",
+      explicitValue: "__TEST_TOKEN__",
     },
   ] as const;
 
@@ -489,10 +489,10 @@ describe("callGateway password resolution", () => {
         gateway: {
           mode: "local",
           bind: "loopback",
-          auth: { password: "secret" },
+          auth: { password: "__TEST_SECRET__" },
         },
       },
-      expectedPassword: "secret",
+      expectedPassword: "__TEST_SECRET__",
     },
     {
       label: "prefers env password over local config password",
@@ -501,7 +501,7 @@ describe("callGateway password resolution", () => {
         gateway: {
           mode: "local",
           bind: "loopback",
-          auth: { password: "from-config" },
+          auth: { password: "__TEST_CONFIG_VALUE__" },
         },
       },
       expectedPassword: "from-env",
@@ -509,13 +509,13 @@ describe("callGateway password resolution", () => {
     {
       label: "uses remote password in remote mode when env is unset",
       envPassword: undefined,
-      config: makeRemotePasswordGatewayConfig("remote-secret"),
-      expectedPassword: "remote-secret",
+      config: makeRemotePasswordGatewayConfig("__TEST_REMOTE_PASSWORD__"),
+      expectedPassword: "__TEST_REMOTE_PASSWORD__",
     },
     {
       label: "prefers env password over remote password in remote mode",
       envPassword: "from-env",
-      config: makeRemotePasswordGatewayConfig("remote-secret"),
+      config: makeRemotePasswordGatewayConfig("__TEST_REMOTE_PASSWORD__"),
       expectedPassword: "from-env",
     },
   ])("$label", async ({ envPassword, config, expectedPassword }) => {
