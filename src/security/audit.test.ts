@@ -182,7 +182,7 @@ describe("security audit", () => {
     const cfg: OpenClawConfig = {
       gateway: {
         bind: "lan",
-        auth: { token: "secret" },
+        auth: { token: "__TEST_SECRET__" },
       },
     };
 
@@ -195,7 +195,7 @@ describe("security audit", () => {
     const cfg: OpenClawConfig = {
       gateway: {
         bind: "loopback",
-        auth: { token: "secret" },
+        auth: { token: "__TEST_SECRET__" },
         tools: { allow: ["sessions_spawn"] },
       },
     };
@@ -209,7 +209,7 @@ describe("security audit", () => {
     const cfg: OpenClawConfig = {
       gateway: {
         bind: "lan",
-        auth: { token: "secret" },
+        auth: { token: "__TEST_SECRET__" },
         tools: { allow: ["sessions_spawn", "gateway"] },
       },
     };
@@ -224,7 +224,7 @@ describe("security audit", () => {
       gateway: {
         bind: "lan",
         auth: {
-          token: "secret",
+          token: "__TEST_SECRET__",
           rateLimit: { maxAttempts: 10, windowMs: 60_000, lockoutMs: 300_000 },
         },
       },
@@ -1375,7 +1375,7 @@ describe("security audit", () => {
     const cfg: OpenClawConfig = {
       gateway: {
         bind: "loopback",
-        auth: { mode: "token", token: "secret" },
+        auth: { mode: "token", token: "__TEST_SECRET__" },
         http: {
           endpoints: {
             chatCompletions: { enabled: true },
@@ -1990,41 +1990,41 @@ description: test skill
       const cfg: OpenClawConfig = {
         gateway: {
           mode: "local",
-          auth: { token: "local-token-abc123" },
+          auth: { token: "__TEST_LOCAL_TOKEN__" },
         },
       };
 
       await audit(cfg, { deep: true, deepTimeoutMs: 50, probeGatewayFn });
 
-      expect(getAuth()?.token).toBe("local-token-abc123");
+      expect(getAuth()?.token).toBe("__TEST_LOCAL_TOKEN__");
     });
 
     it("prefers env token over local config token", async () => {
-      process.env.OPENCLAW_GATEWAY_TOKEN = "env-token";
+      process.env.OPENCLAW_GATEWAY_TOKEN = "__TEST_ENV_TOKEN__";
       const { probeGatewayFn, getAuth } = makeProbeCapture();
       const cfg: OpenClawConfig = {
         gateway: {
           mode: "local",
-          auth: { token: "local-token" },
+          auth: { token: "__TEST_LOCAL_TOKEN_BASE__" },
         },
       };
 
       await audit(cfg, { deep: true, deepTimeoutMs: 50, probeGatewayFn });
 
-      expect(getAuth()?.token).toBe("env-token");
+      expect(getAuth()?.token).toBe("__TEST_ENV_TOKEN__");
     });
 
     it("uses local auth when gateway.mode is undefined (default)", async () => {
       const { probeGatewayFn, getAuth } = makeProbeCapture();
       const cfg: OpenClawConfig = {
         gateway: {
-          auth: { token: "default-local-token" },
+          auth: { token: "__TEST_DEFAULT_LOCAL_TOKEN__" },
         },
       };
 
       await audit(cfg, { deep: true, deepTimeoutMs: 50, probeGatewayFn });
 
-      expect(getAuth()?.token).toBe("default-local-token");
+      expect(getAuth()?.token).toBe("__TEST_DEFAULT_LOCAL_TOKEN__");
     });
 
     it("uses remote auth when gateway.mode is remote with URL", async () => {
@@ -2032,36 +2032,36 @@ description: test skill
       const cfg: OpenClawConfig = {
         gateway: {
           mode: "remote",
-          auth: { token: "local-token-should-not-use" },
+          auth: { token: "__TEST_UNUSED_LOCAL_TOKEN__" },
           remote: {
             url: "wss://remote.example.com:18789",
-            token: "remote-token-xyz789",
+            token: "__TEST_REMOTE_TOKEN__",
           },
         },
       };
 
       await audit(cfg, { deep: true, deepTimeoutMs: 50, probeGatewayFn });
 
-      expect(getAuth()?.token).toBe("remote-token-xyz789");
+      expect(getAuth()?.token).toBe("__TEST_REMOTE_TOKEN__");
     });
 
     it("ignores env token when gateway.mode is remote", async () => {
-      process.env.OPENCLAW_GATEWAY_TOKEN = "env-token";
+      process.env.OPENCLAW_GATEWAY_TOKEN = "__TEST_ENV_TOKEN__";
       const { probeGatewayFn, getAuth } = makeProbeCapture();
       const cfg: OpenClawConfig = {
         gateway: {
           mode: "remote",
-          auth: { token: "local-token-should-not-use" },
+          auth: { token: "__TEST_UNUSED_LOCAL_TOKEN__" },
           remote: {
             url: "wss://remote.example.com:18789",
-            token: "remote-token",
+            token: "__TEST_REMOTE_TOKEN_BASE__",
           },
         },
       };
 
       await audit(cfg, { deep: true, deepTimeoutMs: 50, probeGatewayFn });
 
-      expect(getAuth()?.token).toBe("remote-token");
+      expect(getAuth()?.token).toBe("__TEST_REMOTE_TOKEN_BASE__");
     });
 
     it("uses remote password when env is unset", async () => {
@@ -2071,32 +2071,32 @@ description: test skill
           mode: "remote",
           remote: {
             url: "wss://remote.example.com:18789",
-            password: "remote-pass",
+            password: "__TEST_REMOTE_PASSWORD__",
           },
         },
       };
 
       await audit(cfg, { deep: true, deepTimeoutMs: 50, probeGatewayFn });
 
-      expect(getAuth()?.password).toBe("remote-pass");
+      expect(getAuth()?.password).toBe("__TEST_REMOTE_PASSWORD__");
     });
 
     it("prefers env password over remote password", async () => {
-      process.env.OPENCLAW_GATEWAY_PASSWORD = "env-pass";
+      process.env.OPENCLAW_GATEWAY_PASSWORD = "__TEST_ENV_PASSWORD__";
       const { probeGatewayFn, getAuth } = makeProbeCapture();
       const cfg: OpenClawConfig = {
         gateway: {
           mode: "remote",
           remote: {
             url: "wss://remote.example.com:18789",
-            password: "remote-pass",
+            password: "__TEST_REMOTE_PASSWORD__",
           },
         },
       };
 
       await audit(cfg, { deep: true, deepTimeoutMs: 50, probeGatewayFn });
 
-      expect(getAuth()?.password).toBe("env-pass");
+      expect(getAuth()?.password).toBe("__TEST_ENV_PASSWORD__");
     });
 
     it("falls back to local auth when gateway.mode is remote but URL is missing", async () => {
@@ -2104,16 +2104,16 @@ description: test skill
       const cfg: OpenClawConfig = {
         gateway: {
           mode: "remote",
-          auth: { token: "fallback-local-token" },
+          auth: { token: "__TEST_FALLBACK_LOCAL_TOKEN__" },
           remote: {
-            token: "remote-token-should-not-use",
+            token: "__TEST_UNUSED_REMOTE_TOKEN__",
           },
         },
       };
 
       await audit(cfg, { deep: true, deepTimeoutMs: 50, probeGatewayFn });
 
-      expect(getAuth()?.token).toBe("fallback-local-token");
+      expect(getAuth()?.token).toBe("__TEST_FALLBACK_LOCAL_TOKEN__");
     });
   });
 });

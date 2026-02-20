@@ -71,13 +71,13 @@ describe("resolveGatewayConnection", () => {
   it.each([
     {
       label: "token",
-      auth: { token: "explicit-token" },
-      expected: { token: "explicit-token", password: undefined },
+      auth: { token: "__TEST_TOKEN__" },
+      expected: { token: "__TEST_TOKEN__", password: undefined },
     },
     {
       label: "password",
-      auth: { password: "explicit-password" },
-      expected: { token: undefined, password: "explicit-password" },
+      auth: { password: "__TEST_PASSWORD__" },
+      expected: { token: undefined, password: "__TEST_PASSWORD__" },
     },
   ])("uses explicit $label when url override is set", ({ auth, expected }) => {
     loadConfig.mockReturnValue({ gateway: { mode: "local" } });
